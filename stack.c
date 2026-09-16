@@ -5,7 +5,7 @@ Stack* create_stack(u32 capacity)
     Stack* stack = (Stack*)malloc(sizeof(Stack));
     assert(stack != NULL);
 
-    i32* items = (i32*)malloc(sizeof(i32) * capacity);
+    s32* items = (s32*)malloc(sizeof(s32) * capacity);
     assert(items != NULL);
 
     stack->capacity = capacity;

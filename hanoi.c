@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "stack.h"
+#include "types.h"
 
 #define TOWER_COUNT 3
 #define TARGET_TOWER 2
@@ -71,19 +72,7 @@ Towers* create_towers(u32 diskCount)
     return towers;
 }
 
-// not needed
-bool is_tower_sorted(Towers* tower)
-{
-    i32* towerItems = tower->stack->items;
-    for (i32 i = tower->diskAmount - 1; i >= 1; --i) {
-        if (towerItems[i] > towerItems[i - 1]) {
-            return false;
-        }
-    }
-    return true;
-}
-
-bool is_tower_valid(i32 number)
+bool is_tower_valid(s32 number)
 {
     if (number < 0 || number > TOWER_COUNT - 1) {
         return false;
@@ -92,10 +81,10 @@ bool is_tower_valid(i32 number)
     return true;
 }
 
-i32 disk_compare(const void* a, const void* b)
+s32 disk_compare(const void* a, const void* b)
 {
-    i32* diskA = (i32*)a;
-    i32* diskB = (i32*)b;
+    s32* diskA = (s32*)a;
+    s32* diskB = (s32*)b;
 
     if (*diskA > *diskB) {
         return -1;
@@ -108,7 +97,7 @@ i32 disk_compare(const void* a, const void* b)
     return 1;
 }
 
-void sort_disks(i32* disks, u32 diskCount)
+void sort_disks(s32* disks, u32 diskCount)
 {
     qsort(disks, diskCount, sizeof(disks[0]), disk_compare);
 }
@@ -124,7 +113,7 @@ bool can_move_disk(Towers* source, Towers* destiny)
         return false;
     }
 
-    i32 diskToMove = get_stack_top(source->stack);
+    s32 diskToMove = get_stack_top(source->stack);
     
     if (diskToMove > get_stack_top(destiny->stack)) {
         return false;
@@ -139,9 +128,9 @@ void insert_disk(Towers* tower, int disk)
     tower->diskAmount++;
 }
 
-i32 remove_disk(Towers* tower)
+s32 remove_disk(Towers* tower)
 {
-    i32 disk = pop_stack(tower->stack);
+    s32 disk = pop_stack(tower->stack);
     tower->diskAmount--;
     return disk;
 }
@@ -152,7 +141,7 @@ bool move_disk(Towers* source, Towers* destiny)
         return false;
     }
 
-    i32 disk = remove_disk(source);
+    s32 disk = remove_disk(source);
     insert_disk(destiny, disk);
 
     return true;
@@ -171,7 +160,7 @@ bool game_won(Towers* towers, u32 diskCount)
     return true;
 }
 
-void get_disks_from_player(i32* disks, u32 diskCount)
+void get_disks_from_player(s32* disks, u32 diskCount)
 {
     for (u32 i = 0; i < diskCount; ++i) {
         printf("Type the disk value: ");
@@ -187,7 +176,7 @@ void print_towers(Towers* towers)
         printf("Tower[%d]\n", i);
         printf("Disks:\n");
 
-        for (i32 j = towers[i].diskAmount - 1; j >= 0; --j) {
+        for (s32 j = towers[i].diskAmount - 1; j >= 0; --j) {
             printf("%d\n", towers[i].stack->items[j]);
         }
 
@@ -204,9 +193,9 @@ void free_towers(Towers* towers)
     towers = NULL;
 }
 
-i32* create_disks(u32 diskCount)
+s32* create_disks(u32 diskCount)
 {
-    i32* disks = (i32*)malloc(sizeof(i32) * diskCount);
+    s32* disks = (s32*)malloc(sizeof(s32) * diskCount);
     assert(disks != NULL);
 
     get_disks_from_player(disks, diskCount);
@@ -217,7 +206,7 @@ i32* create_disks(u32 diskCount)
 
 void play_from_file(const char* fPath, u32 diskCount)
 {
-    i32* disks = create_disks(diskCount);
+    s32* disks = create_disks(diskCount);
     Towers* towers = create_towers(diskCount);
 
     for (u32 i = 0; i < diskCount; ++i) {
@@ -237,7 +226,7 @@ void play_from_file(const char* fPath, u32 diskCount)
         move_disk(&towers[src], &towers[dst]);
     }
 
-    printf("--- FINAL TOWERS --- ");
+    printf("--- FINAL TOWERS --- \n");
     print_towers(towers);
     
     if (game_won(towers, diskCount)) {
@@ -253,7 +242,7 @@ void play_from_file(const char* fPath, u32 diskCount)
 
 void play_manually(u32 diskCount)
 {
-    i32* disks = create_disks(diskCount);
+    s32* disks = create_disks(diskCount);
     Towers* towers = create_towers(diskCount);
 
     for (u32 i = 0; i < diskCount; ++i) {
@@ -263,7 +252,7 @@ void play_manually(u32 diskCount)
     while (!game_won(towers, diskCount)) {
         printf("--- TURN ---\n");
 
-        i32 src, dst;
+        s32 src, dst;
 
         printf("Your turn: choose a source and destiny tower to make your move\n");
         print_towers(towers);
